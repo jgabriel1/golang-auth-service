@@ -13,8 +13,7 @@ type usersPostJson struct {
 	Username, Password string
 }
 
-func UsersRouter() *httprouter.Router {
-	router := httprouter.New()
+func usersRoutes(router *httprouter.Router) *httprouter.Router {
 	usersRepository := repo.NewUsersRepository()
 
 	router.POST("/users", func(w http.ResponseWriter, r *http.Request, pm httprouter.Params) {
@@ -24,12 +23,9 @@ func UsersRouter() *httprouter.Router {
 			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		}
 
-		registerUser := services.RegisterUser{
-			UserRepo: usersRepository,
-		}
+		registerUser := services.NewRegisterUser(usersRepository)
 
 		user, err := registerUser.Execute(data.Username, data.Password)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}

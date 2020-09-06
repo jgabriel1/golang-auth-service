@@ -6,6 +6,6 @@ import (
 )
 
 func main() {
-	usersRouter := routes.UsersRouter()
-	http.ListenAndServe(":8080", usersRouter)
+	router := routes.GetRouter()
+	http.ListenAndServe(":8080", router)
 }

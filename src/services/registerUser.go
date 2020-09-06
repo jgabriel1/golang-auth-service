@@ -9,7 +9,15 @@ import (
 )
 
 type RegisterUser struct {
-	UserRepo *repo.UsersRepository
+	usersRepo *repo.UsersRepository
+}
+
+func NewRegisterUser(usersRepo *repo.UsersRepository) *RegisterUser {
+	this := RegisterUser{
+		usersRepo: usersRepo,
+	}
+
+	return &this
 }
 
 func (this *RegisterUser) hashPassword(password string) (string, error) {
@@ -34,7 +42,7 @@ func (this *RegisterUser) Execute(username, password string) (*models.User, erro
 		return nil, errors.New("Error hashing password:" + err.Error())
 	}
 
-	createdUser, err := this.UserRepo.Create(username, string(hashedPwd))
+	createdUser, err := this.usersRepo.Create(username, string(hashedPwd))
 
 	if err != nil {
 		return nil, errors.New("Error creating user:" + err.Error())
