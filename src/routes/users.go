@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"golang-auth-service/src/services"
-	"golang-auth-service/src/utils"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -22,7 +21,7 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 
 		credentials, err := authorizeUser.Execute(&r.Header)
 		if err != nil {
-			utils.JSONErrorResponse(w, err, http.StatusUnauthorized)
+			JSONErrorResponse(w, err, http.StatusUnauthorized)
 			return
 		}
 
@@ -30,7 +29,7 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 
 		user, err := deps.UsersRepository.FindById(userId)
 		if err != nil {
-			utils.JSONErrorResponse(w, err, http.StatusNotFound)
+			JSONErrorResponse(w, err, http.StatusNotFound)
 		}
 
 		js, _ := json.Marshal(user)

@@ -3,7 +3,6 @@ package routes
 import (
 	"encoding/json"
 	"golang-auth-service/src/services"
-	"golang-auth-service/src/utils"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -22,13 +21,13 @@ func sessionsRoutes(router *httprouter.Router, deps *RouteDependencies) *httprou
 
 		authenticatedData, err := authenticateUser.Execute(username, password)
 		if err != nil {
-			utils.JSONErrorResponse(w, err, http.StatusUnauthorized)
+			JSONErrorResponse(w, err, http.StatusUnauthorized)
 			return
 		}
 
 		js, err := json.Marshal(authenticatedData)
 		if err != nil {
-			utils.JSONErrorResponse(w, err, http.StatusInternalServerError)
+			JSONErrorResponse(w, err, http.StatusInternalServerError)
 			return
 		}
 
