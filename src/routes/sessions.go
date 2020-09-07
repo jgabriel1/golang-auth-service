@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func sessionsRoutes(router *httprouter.Router) *httprouter.Router {
+func sessionsRoutes(router *httprouter.Router, deps *Dependencies) *httprouter.Router {
 	router.POST("/login", func(w http.ResponseWriter, r *http.Request, pm httprouter.Params) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)

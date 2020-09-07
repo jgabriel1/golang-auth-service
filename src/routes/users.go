@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"golang-auth-service/src/repo"
 	"golang-auth-service/src/services"
 	"net/http"
 
@@ -13,8 +12,7 @@ type usersPostJson struct {
 	Username, Password string
 }
 
-func usersRoutes(router *httprouter.Router) *httprouter.Router {
-	usersRepository := repo.NewUsersRepository()
+func usersRoutes(router *httprouter.Router, deps *Dependencies) *httprouter.Router {
 
 	router.POST("/users", func(w http.ResponseWriter, r *http.Request, pm httprouter.Params) {
 		var data usersPostJson
@@ -23,7 +21,7 @@ func usersRoutes(router *httprouter.Router) *httprouter.Router {
 			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		}
 
-		registerUser := services.NewRegisterUser(usersRepository)
+		registerUser := services.NewRegisterUser(deps.UsersRepository)
 
 		user, err := registerUser.Execute(data.Username, data.Password)
 		if err != nil {

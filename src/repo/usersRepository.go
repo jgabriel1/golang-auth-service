@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"golang-auth-service/src/models"
@@ -9,11 +10,13 @@ import (
 )
 
 type UsersRepository struct {
+	db   *sql.DB
 	data []*models.User
 }
 
-func NewUsersRepository() *UsersRepository {
+func NewUsersRepository(db *sql.DB) *UsersRepository {
 	repo := UsersRepository{
+		db:   db,
 		data: make([]*models.User, 0),
 	}
 

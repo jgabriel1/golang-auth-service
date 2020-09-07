@@ -1,11 +1,17 @@
 package main
 
 import (
-	"golang-auth-service/src/routes"
-	"net/http"
+	server "golang-auth-service/src"
 )
 
 func main() {
-	router := routes.GetRouter()
-	http.ListenAndServe(":8080", router)
+	container := server.BuildContainer()
+
+	err := container.Invoke(func(sv *server.Server) {
+		sv.Run()
+	})
+
+	if err != nil {
+		panic(err)
+	}
 }
