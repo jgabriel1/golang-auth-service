@@ -2,12 +2,10 @@ package services
 
 import (
 	"errors"
+	"golang-auth-service/src/security"
 
 	"golang-auth-service/src/models"
 	"golang-auth-service/src/repo"
-	"time"
-
-	"github.com/dgrijalva/jwt-go"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -36,16 +34,18 @@ func (this *AuthenticateUser) compareHashAndPassword(hash, password string) erro
 	return bcrypt.CompareHashAndPassword(hashBytes, passwordBytes)
 }
 
-func (this *AuthenticateUser) generateSignedToken(userId string) (string, error) {
-	payload := jwt.MapClaims{}
+// func (this *AuthenticateUser) generateSignedToken(userId string) (string, error) {
+// 	payload := jwt.MapClaims{}
 
-	payload["user_id"] = userId
-	payload["exp"] = time.Now().Add(time.Minute * 15).Unix()
+// 	payload["user_id"] = userId
+// 	payload["exp"] = json.Number(strconv.FormatInt(time.Now().Add(time.Minute*15).Unix(), 10))
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+// 	fmt.Println(payload)
 
-	return token.SignedString([]byte("supersecret"))
-}
+// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
+
+// 	return token.SignedString([]byte("supersecret"))
+// }
 
 func (this *AuthenticateUser) Execute(username, password string) (*AuthenticateUserResponse, error) {
 	user, err := this.usersRepo.FindByName(username)
@@ -57,12 +57,12 @@ func (this *AuthenticateUser) Execute(username, password string) (*AuthenticateU
 		return nil, errors.New("Wrong username/password combination.")
 	}
 
-	accessToken, err := this.generateSignedToken(user.Id.String())
+	accessToken, err := security.GenerateSignedJWT(user.Id.String())
 
-	response := AuthenticateUserResponse{
+	response := &AuthenticateUserResponse{
 		User:  user,
 		Token: accessToken,
 	}
 
-	return &response, nil
+	return response, nil
 }

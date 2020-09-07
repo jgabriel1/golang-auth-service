@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"golang-auth-service/src/services"
+	"golang-auth-service/src/utils"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -15,7 +16,19 @@ type usersPostJson struct {
 
 func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter.Router {
 
-	router.POST("/users", func(w http.ResponseWriter, r *http.Request, pm httprouter.Params) {
+	router.GET("/users/me", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		authorizeUser := services.NewAuthorizeUser(deps.UsersRepository)
+
+		credentials, err := authorizeUser.Execute(&r.Header)
+		if err != nil {
+			utils.JSONErrorResponse(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		w.Write([]byte(credentials.UserID))
+	})
+
+	router.POST("/users", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		var data usersPostJson
 
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {

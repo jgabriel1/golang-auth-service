@@ -26,15 +26,14 @@ func sessionsRoutes(router *httprouter.Router, deps *RouteDependencies) *httprou
 			return
 		}
 
-		w.Header().Set("Content-type", "application/json")
-		w.WriteHeader(http.StatusOK)
-
 		js, err := json.Marshal(authenticatedData)
 		if err != nil {
-			utils.JSONErrorResponse(w, err, http.StatusBadRequest)
+			utils.JSONErrorResponse(w, err, http.StatusInternalServerError)
 			return
 		}
 
+		w.Header().Set("Content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		w.Write(js)
 	})
 
