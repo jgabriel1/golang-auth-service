@@ -2,7 +2,7 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
+	"golang-auth-service/src/services"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -17,18 +17,17 @@ func sessionsRoutes(router *httprouter.Router, deps *RouteDependencies) *httprou
 		username := r.Form.Get("username")
 		password := r.Form.Get("password")
 
-		fmt.Println("username: " + username)
-		fmt.Println("password: " + password)
+		authenticateUser := services.NewAuthenticateUser(deps.UsersRepository)
 
-		w.WriteHeader(http.StatusAccepted)
+		authenticatedData, err := authenticateUser.Execute(username, password)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+		}
 
-		js, err := json.Marshal(struct {
-			Username string
-			Password string
-		}{
-			Username: username,
-			Password: password,
-		})
+		w.Header().Set("Content-type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		js, err := json.Marshal(authenticatedData)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}

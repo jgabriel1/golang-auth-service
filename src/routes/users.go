@@ -32,7 +32,7 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 		w.Header().Set("Content-type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 
-		js, err := json.Marshal(&user)
+		js, err := json.Marshal(user)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
