@@ -18,9 +18,6 @@ func BuildContainer() *dig.Container {
 	// Repositories
 	c.Provide(repo.NewUsersRepository)
 
-	// This is not really working as intended!!!
-	c.Provide(routes.BuildDependencies)
-
 	// Router
 	c.Provide(routes.GetRouter)
 

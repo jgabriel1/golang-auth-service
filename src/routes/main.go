@@ -4,25 +4,20 @@ import (
 	"golang-auth-service/src/repo"
 
 	"github.com/julienschmidt/httprouter"
+	"go.uber.org/dig"
 )
 
-type Dependencies struct {
+type RouteDependencies struct {
+	dig.In
+
 	UsersRepository *repo.UsersRepository
 }
 
-func BuildDependencies(usersRepo *repo.UsersRepository) *Dependencies {
-	d := Dependencies{
-		UsersRepository: usersRepo,
-	}
-
-	return &d
-}
-
-func GetRouter(deps *Dependencies) *httprouter.Router {
+func GetRouter(deps RouteDependencies) *httprouter.Router {
 	router := httprouter.New()
 
-	usersRoutes(router, deps)
-	sessionsRoutes(router, deps)
+	usersRoutes(router, &deps)
+	sessionsRoutes(router, &deps)
 
 	return router
 }
