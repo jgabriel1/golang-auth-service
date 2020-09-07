@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"golang-auth-service/src/services"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -17,9 +16,8 @@ type usersPostJson struct {
 func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter.Router {
 
 	router.GET("/users/me", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		authorizeUser := services.NewAuthorizeUser(deps.UsersRepository)
 
-		credentials, err := authorizeUser.Execute(&r.Header)
+		credentials, err := deps.AuthorizeUserService.Execute(&r.Header)
 		if err != nil {
 			JSONErrorResponse(w, err, http.StatusUnauthorized)
 			return
@@ -44,9 +42,7 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		}
 
-		registerUser := services.NewRegisterUser(deps.UsersRepository)
-
-		user, err := registerUser.Execute(data.Username, data.Password)
+		user, err := deps.RegisterUserService.Execute(data.Username, data.Password)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 		}
