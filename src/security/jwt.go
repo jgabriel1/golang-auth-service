@@ -42,10 +42,15 @@ func ValidateJWT(tokenString string) (*JWTClaims, error) {
 	)
 
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Something went wrong while parsing the token.")
 	}
 	if !token.Valid {
 		return nil, errors.New("Invalid Token.")
+	}
+
+	expirationTime := time.Unix(claims.ExpiresAt, 0)
+	if expirationTime.Before(time.Now()) {
+		return nil, errors.New("Token is expired.")
 	}
 
 	return claims, nil

@@ -48,15 +48,11 @@ func (this *AuthorizeUser) parseHeaders(headers *http.Header) (string, error) {
 }
 
 func (this *AuthorizeUser) Execute(requestHeaders *http.Header) (*AuthCredentials, error) {
-	// check if token is in headers while grabbing it's value
-	// parse header to separate Bearer form the token
-
 	tokenValue, err := this.parseHeaders(requestHeaders)
 	if err != nil {
 		return nil, err
 	}
 
-	// validate token string while returning the payload as credentials
 	jwtPayload, err := security.ValidateJWT(tokenValue)
 	if err != nil {
 		return nil, err

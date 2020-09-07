@@ -34,19 +34,6 @@ func (this *AuthenticateUser) compareHashAndPassword(hash, password string) erro
 	return bcrypt.CompareHashAndPassword(hashBytes, passwordBytes)
 }
 
-// func (this *AuthenticateUser) generateSignedToken(userId string) (string, error) {
-// 	payload := jwt.MapClaims{}
-
-// 	payload["user_id"] = userId
-// 	payload["exp"] = json.Number(strconv.FormatInt(time.Now().Add(time.Minute*15).Unix(), 10))
-
-// 	fmt.Println(payload)
-
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-
-// 	return token.SignedString([]byte("supersecret"))
-// }
-
 func (this *AuthenticateUser) Execute(username, password string) (*AuthenticateUserResponse, error) {
 	user, err := this.usersRepo.FindByName(username)
 	if err != nil {
