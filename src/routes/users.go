@@ -6,6 +6,7 @@ import (
 	"golang-auth-service/src/utils"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -21,11 +22,20 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 
 		credentials, err := authorizeUser.Execute(&r.Header)
 		if err != nil {
-			utils.JSONErrorResponse(w, err, http.StatusInternalServerError)
+			utils.JSONErrorResponse(w, err, http.StatusUnauthorized)
 			return
 		}
 
-		w.Write([]byte(credentials.UserID))
+		userId, _ := uuid.Parse(credentials.UserID)
+
+		user, err := deps.UsersRepository.FindById(userId)
+		if err != nil {
+			utils.JSONErrorResponse(w, err, http.StatusNotFound)
+		}
+
+		js, _ := json.Marshal(user)
+
+		w.Write(js)
 	})
 
 	router.POST("/users", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
