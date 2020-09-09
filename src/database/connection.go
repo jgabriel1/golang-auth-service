@@ -22,7 +22,5 @@ func NewDBConnection(config *DBConfig) *sql.DB {
 		panic(err)
 	}
 
-	defer db.Close()
-
 	return db
 }
