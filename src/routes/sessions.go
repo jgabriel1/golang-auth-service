@@ -11,6 +11,7 @@ func sessionsRoutes(router *httprouter.Router, deps *RouteDependencies) *httprou
 	router.POST("/login", func(w http.ResponseWriter, r *http.Request, pm httprouter.Params) {
 		if err := r.ParseForm(); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		username := r.Form.Get("username")

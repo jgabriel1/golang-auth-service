@@ -21,7 +21,7 @@ func main() {
 
 		migration := &CreateUsersTable01{db}
 
-		res, err := migration.Down()
+		res, err := migration.Up()
 		if err != nil {
 			panic(err)
 		}

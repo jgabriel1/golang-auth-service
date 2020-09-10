@@ -3,59 +3,116 @@ package repo
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"golang-auth-service/src/models"
 
 	"github.com/google/uuid"
 )
 
 type UsersRepository struct {
-	db   *sql.DB
-	data []*models.User
+	db *sql.DB
 }
 
 func NewUsersRepository(db *sql.DB) *UsersRepository {
-	repo := UsersRepository{
-		db:   db,
-		data: make([]*models.User, 0),
-	}
+	repo := UsersRepository{db}
 
 	return &repo
 }
 
-func (repo *UsersRepository) All() []*models.User {
-	return repo.data
+func (repo *UsersRepository) All() ([]models.User, error) {
+	rows, err := repo.db.Query("SELECT * FROM users;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	users := make([]models.User, 0)
+	for rows.Next() {
+		var user models.User
+
+		if err := rows.Scan(user); err != nil {
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
 
 func (repo *UsersRepository) FindById(id uuid.UUID) (*models.User, error) {
-	for _, user := range repo.data {
-		if user.Id == id {
-			return user, nil
-		}
-	}
+	var user models.User
 
-	return nil, errors.New("User does not exist.")
+	result, err := repo.db.Query(
+		"SELECT * FROM users WHERE id = $1;",
+		id,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+
+	result.Next()
+
+	if err := result.Scan(
+		&user.Id,
+		&user.Username,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	); err != nil {
+		return nil, errors.New("Couldn't find user!")
+	}
+	return &user, nil
 }
 
 func (repo *UsersRepository) FindByName(name string) (*models.User, error) {
-	for _, user := range repo.data {
-		if user.Username == name {
-			return user, nil
-		}
-	}
+	var user models.User
 
-	return nil, errors.New("User does not exist.")
+	result, err := repo.db.Query(
+		"SELECT * FROM users WHERE username = $1;",
+		name,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+
+	result.Next()
+
+	if err := result.Scan(
+		&user.Id,
+		&user.Username,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	); err != nil {
+		return nil, errors.New("Couldn't find user!")
+	}
+	return &user, nil
 }
 
 func (repo *UsersRepository) Create(username, password string) (*models.User, error) {
-	newUser := models.NewUser(
+	var user models.User
+
+	result, err := repo.db.Query(
+		"INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;",
 		username,
 		password,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
 
-	repo.data = append(repo.data, newUser)
+	result.Next()
 
-	fmt.Println(repo.data)
-
-	return newUser, nil
+	if err := result.Scan(
+		&user.Id,
+		&user.Username,
+		&user.Password,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	); err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

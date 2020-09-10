@@ -28,6 +28,7 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 		user, err := deps.UsersRepository.FindById(userId)
 		if err != nil {
 			JSONErrorResponse(w, err, http.StatusNotFound)
+			return
 		}
 
 		js, _ := json.Marshal(user)
@@ -40,11 +41,13 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 
 		if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
 			http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+			return
 		}
 
 		user, err := deps.RegisterUserService.Execute(data.Username, data.Password)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		w.Header().Set("Content-type", "application/json")
@@ -53,6 +56,7 @@ func usersRoutes(router *httprouter.Router, deps *RouteDependencies) *httprouter
 		js, err := json.Marshal(user)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
 		}
 
 		w.Write(js)
