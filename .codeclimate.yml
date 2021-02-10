@@ -1,5 +1,0 @@
-plugins:
-    golint:
-      enabled: true
-      config:
-        min_confidence: 0.9
