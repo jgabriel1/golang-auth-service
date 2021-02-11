@@ -8,12 +8,12 @@ import (
 )
 
 type User struct {
-	Id           uuid.UUID `json:"id"`
-	Name         string    `json:"name"`
-	Email        string    `json:"email"`
-	PasswordHash []byte    `json:"password"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	Id           uuid.UUID          `json:"id"`
+	Name         string             `json:"name"`
+	Email        dtype.Email        `json:"email"`
+	PasswordHash dtype.PasswordHash `json:"-"`
+	CreatedAt    time.Time          `json:"created_at"`
+	UpdatedAt    time.Time          `json:"updated_at"`
 }
 
 type IUsersRepository interface {
@@ -25,8 +25,8 @@ type IUsersRepository interface {
 func NewUser(name string, email *dtype.Email, passwordHash *dtype.PasswordHash) (*User, error) {
 	user := &User{
 		Name:         name,
-		Email:        email.Value,
-		PasswordHash: passwordHash.Value,
+		Email:        *email,
+		PasswordHash: *passwordHash,
 	}
 
 	user.Id = uuid.New()
