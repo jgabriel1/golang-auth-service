@@ -36,7 +36,14 @@ func TestPassword(t *testing.T) {
 	_, err = dtype.NewPassword(onlyNumbersPassword)
 
 	if err == nil {
-		t.Error("Passing a password without any letters in it should return an error")
+		t.Error("Passing a password without any letters in it should return an error.")
+	}
+
+	weirdCharactersPassword := "abc123-[]*&"
+	_, err = dtype.NewPassword(weirdCharactersPassword)
+
+	if err == nil {
+		t.Error("Passing a password with non-alphanumeric characters should return an error.")
 	}
 }
 
