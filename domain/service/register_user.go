@@ -9,7 +9,7 @@ import (
 type RegisterUserService struct {
 	repository    model.IUsersRepository
 	nameIsUnique  specification.UserNameIsUnique
-	emailIsUnique specification.EmailIsUnique
+	emailIsUnique specification.UserEmailIsUnique
 }
 
 func NewRegisterUserService(repository *model.IUsersRepository) *RegisterUserService {
@@ -18,7 +18,7 @@ func NewRegisterUserService(repository *model.IUsersRepository) *RegisterUserSer
 	}
 
 	service.nameIsUnique = *specification.NewUserNameIsUnique(repository)
-	service.emailIsUnique = *specification.NewEmailIsUnique(repository)
+	service.emailIsUnique = *specification.NewUserEmailIsUnique(repository)
 
 	return service
 }
@@ -41,20 +41,20 @@ func (s *RegisterUserService) Execute(username, emailText, passwordText string) 
 	// TODO: Hash password
 	passwordHash := dtype.NewPasswordHash([]byte(password.Value))
 
+	// Create user
+	user, err := model.NewUser(username, email, passwordHash)
+	if err != nil {
+		return nil, err
+	}
+
 	// Check if user name is unique
-	err = s.nameIsUnique.IsSatisfiedBy(username)
+	err = s.nameIsUnique.IsSatisfiedBy(user)
 	if err != nil {
 		return nil, err
 	}
 
 	// Check if email is unique
-	err = s.emailIsUnique.IsSatisfiedBy(email)
-	if err != nil {
-		return nil, err
-	}
-
-	// Create user
-	user, err := model.NewUser(username, email, passwordHash)
+	err = s.emailIsUnique.IsSatisfiedBy(user)
 	if err != nil {
 		return nil, err
 	}
