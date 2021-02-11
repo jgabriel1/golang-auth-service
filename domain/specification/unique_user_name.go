@@ -15,8 +15,8 @@ func NewUserNameIsUnique(repository *model.IUsersRepository) *UserNameIsUnique {
 	}
 }
 
-func (s *UserNameIsUnique) IsSatisfiedBy(username string) error {
-	user, err := s.repository.FindByUserName(username)
+func (s *UserNameIsUnique) IsSatisfiedBy(user *model.User) error {
+	user, err := s.repository.FindByUserName(user.Name)
 	if err != nil {
 		return err
 	}

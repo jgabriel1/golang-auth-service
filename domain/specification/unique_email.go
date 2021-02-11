@@ -1,23 +1,22 @@
 package specification
 
 import (
-	"auth-service/domain/dtype"
 	"auth-service/domain/model"
 	"errors"
 )
 
-type EmailIsUnique struct {
+type UserEmailIsUnique struct {
 	repository model.IUsersRepository
 }
 
-func NewEmailIsUnique(repository *model.IUsersRepository) *EmailIsUnique {
-	return &EmailIsUnique{
+func NewUserEmailIsUnique(repository *model.IUsersRepository) *UserEmailIsUnique {
+	return &UserEmailIsUnique{
 		repository: *repository,
 	}
 }
 
-func (s *EmailIsUnique) IsSatisfiedBy(email *dtype.Email) error {
-	user, err := s.repository.FindByEmail(email)
+func (s *UserEmailIsUnique) IsSatisfiedBy(user *model.User) error {
+	user, err := s.repository.FindByEmail(&user.Email)
 	if err != nil {
 		return err
 	}
